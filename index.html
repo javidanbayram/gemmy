@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sema's Daily Treasures 💎</title>
+  <meta name="description" content="A magical daily reward journey — just for you." />
+
+  <!-- Google Fonts: Nunito (premium, rounded, cozy) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       AMBIENT BACKGROUND ORBS (pure CSS, no images needed)
+  ═══════════════════════════════════════════════════════════ -->
+  <div class="bg-orbs" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="orb orb-4"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       TOAST NOTIFICATION (dynamically shown by JS)
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="toast" class="toast" role="alert" aria-live="polite">
+    <span class="toast-icon">💤</span>
+    <span id="toast-message" class="toast-text"></span>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       PARTICLE CANVAS (confetti layer, sits behind modal)
+  ═══════════════════════════════════════════════════════════ -->
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       DARK OVERLAY (shown when a box is being opened)
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="overlay" class="overlay" aria-hidden="true"></div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       REWARD MODAL (glassmorphism card, revealed after explosion)
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="reward-modal" class="reward-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-inner">
+      <!-- Decorative corner diamonds -->
+      <div class="modal-corner-gem top-left" aria-hidden="true">💎</div>
+      <div class="modal-corner-gem top-right" aria-hidden="true">💎</div>
+
+      <div class="modal-day-badge" id="modal-day-badge">Day 1</div>
+      <h2 id="modal-title" class="modal-title"></h2>
+      <div id="modal-content" class="modal-content-area"></div>
+
+      <button id="modal-close-btn" class="btn-primary modal-close-btn" aria-label="Close reward">
+        <span>Claim! 🎀</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       MAIN APP WRAPPER
+  ═══════════════════════════════════════════════════════════ -->
+  <main class="app-wrapper">
+
+    <!-- ─── TOP HALF: THE COMPANION ─────────────────────────── -->
+    <section class="companion-section" aria-label="Your companion">
+
+      <!-- Header pill -->
+      <div class="header-pill">
+        <span class="header-pill-dot"></span>
+        <span id="header-date-label" class="header-pill-text">Loading…</span>
+      </div>
+
+      <!-- The floating Gem companion -->
+      <div id="companion" class="companion-container" role="img" aria-label="Rarity the gem companion">
+
+        <!-- Outer glow ring -->
+        <div class="companion-glow-ring" aria-hidden="true"></div>
+
+        <!-- The CSS cat companion character -->
+        <div class="cat-wrapper" aria-hidden="true">
+
+          <!-- Ears (behind the head) -->
+          <div class="cat-ear cat-ear-left">
+            <div class="cat-ear-inner"></div>
+          </div>
+          <div class="cat-ear cat-ear-right">
+            <div class="cat-ear-inner"></div>
+          </div>
+
+          <!-- Head -->
+          <div class="cat-head">
+
+            <!-- Fur tuft highlight on forehead -->
+            <div class="cat-forehead-tuft"></div>
+
+            <!-- Eyes -->
+            <div class="cat-eyes">
+              <div class="cat-eye cat-eye-left">
+                <div class="cat-pupil">
+                  <div class="cat-shine cat-shine-big"></div>
+                  <div class="cat-shine cat-shine-small"></div>
+                </div>
+              </div>
+              <div class="cat-eye cat-eye-right">
+                <div class="cat-pupil">
+                  <div class="cat-shine cat-shine-big"></div>
+                  <div class="cat-shine cat-shine-small"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Nose -->
+            <div class="cat-nose"></div>
+
+            <!-- Mouth -->
+            <div class="cat-mouth"></div>
+
+            <!-- Blush cheeks -->
+            <div class="cat-blush cat-blush-left"></div>
+            <div class="cat-blush cat-blush-right"></div>
+
+            <!-- Whiskers -->
+            <div class="cat-whisker cat-w1"></div>
+            <div class="cat-whisker cat-w2"></div>
+            <div class="cat-whisker cat-w3"></div>
+            <div class="cat-whisker cat-w4"></div>
+
+          </div><!-- /cat-head -->
+
+          <!-- Little paw bumps -->
+          <div class="cat-paws">
+            <div class="cat-paw cat-paw-left"></div>
+            <div class="cat-paw cat-paw-right"></div>
+          </div>
+
+        </div><!-- /cat-wrapper -->
+
+        <!-- Orbiting sparkles -->
+        <div class="sparkle-orbit" aria-hidden="true">
+          <span class="sparkle s1">✦</span>
+          <span class="sparkle s2">✧</span>
+          <span class="sparkle s3">✦</span>
+          <span class="sparkle s4">✧</span>
+        </div>
+
+        <!-- Shadow beneath gem -->
+        <div class="companion-shadow" aria-hidden="true"></div>
+      </div>
+
+      <!-- Companion status text -->
+      <p class="companion-status-text" id="companion-status">✨ Ready for today's treasure!</p>
+
+    </section>
+
+    <!-- ─── BOTTOM HALF: THE TROPHY ROAD ─────────────────────── -->
+    <section class="trophy-road-section" aria-label="Trophy road — 7 day journey">
+
+      <div class="trophy-road-header">
+        <h1 class="trophy-road-title">Your Trophy Road</h1>
+        <p class="trophy-road-subtitle">One treasure a day, just for you 🎀</p>
+      </div>
+
+      <!-- The road itself — boxes injected here by JS -->
+      <div class="trophy-road-track" id="trophy-road-track" role="list">
+        <!-- Day boxes rendered by JS -->
+      </div>
+
+      <!-- Scroll indicator (mobile) -->
+      <div class="scroll-hint" aria-hidden="true">
+        <span class="scroll-hint-arrow">›</span>
+        <span class="scroll-hint-text">Scroll to explore</span>
+        <span class="scroll-hint-arrow">›</span>
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
