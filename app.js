@@ -44,12 +44,12 @@ const rewardsData = [
   },
   {
     // ── Day 2 ── YouTube video ──────────────────────────────────────
-    // ← Change content to any YouTube embed URL: https://www.youtube.com/embed/VIDEO_ID
     day: 2,
     type: 'youtube',
     emoji: '🎬',
-    title: '2-ci Gün: Biraz gülmək vaxtı 🎬',
-    content: 'https://www.youtube.com/embed/dQw4w9WgXcQ'
+    title: '2-ci Gün: Rarity kimi cəsur olmaq! 🎬',
+    subtitle: 'Rarity-nin bu səhnədə necə cəsur və əzmli olduğuna bax... Eynilə sənin kimi 💜',
+    content: 'https://www.youtube.com/embed/qmTRlJeYhG0'
   },
   {
     // ── Day 3 ── text message ───────────────────────────────────────
