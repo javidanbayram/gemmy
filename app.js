@@ -70,13 +70,14 @@ const rewardsData = [
     content: ''
   },
   {
-    // ── Day 5 ── scratch-off reveal ─────────────────────────────────
-    // ← Change content to whatever secret message you want hidden
-    day: 5,
-    type: 'scratch-off',
-    emoji: '🪙',
-    title: '5-ci Gün: Gizli Mesaj 🪙',
-    content: 'Dünyanın ən şirin və mənim ən çox sevdiyim qızı! Həftəsonuna çox az qaldı, çooox darıxmışam ❤️'
+    // ── Day 5 ── darkroom reveal ─────────────────────────────────
+    day: 5, 
+    type: "darkroom", 
+    emoji: "🎞️",
+    title: "5-ci Gün: Qaranlıq Otaqda Bir Möcüzə 🎞️", 
+    subtitle: "Şəkli üzə çıxarmaq üçün məhlulu damlat...", 
+    content: "SEMANIN_SEKLI_BURA_GELECEK.jpg", 
+    quote: "Bəzi gözəl şeylərin tam üzə çıxması üçün zaman və səbr lazımdır, eynilə səninlə tanışlığımız kimi"
   },
   {
     // ── Day 6 ── text message ───────────────────────────────────────
@@ -499,6 +500,28 @@ function populateModal(idx) {
         </div>
       `;
       requestAnimationFrame(() => initStarrDrop());
+      break;
+
+    // ── Darkroom Reveal ───────────────────────────────────────────
+    case 'darkroom':
+      contentHTML = subtitleHTML + `
+        <div class="darkroom-wrapper" id="darkroom-wrapper">
+          <p class="darkroom-hint">Damcılıqla məhlulu kağıza toxundur və ya barmağınla kağızı yu...</p>
+          <div class="darkroom-tray" id="darkroom-tray">
+            <div class="liquid-layer" id="liquid-layer">
+              <div class="photo-paper" id="photo-paper">
+                <img src="${reward.content}" alt="Photo" class="photo-img" id="photo-img" />
+                <div class="photo-emulsion" id="photo-emulsion"></div>
+              </div>
+            </div>
+          </div>
+          <div class="darkroom-footer is-hidden" id="darkroom-footer">
+            <p class="darkroom-quote">${reward.quote}</p>
+            <button class="btn-primary copy-btn" id="darkroom-copy-btn">Mesajı Kopyala 📋</button>
+          </div>
+        </div>
+      `;
+      requestAnimationFrame(() => initDarkroom(reward.quote));
       break;
 
     // ── YouTube embed ──────────────────────────────────────────────
@@ -1274,4 +1297,163 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
 } else {
   init();
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   DARKROOM — Interactive Photo Development Flow
+   ─────────────────────────────────────────────────────────────── */
+function initDarkroom(quoteText) {
+  const wrapper = document.getElementById('darkroom-wrapper');
+  const tray = document.getElementById('darkroom-tray');
+  const img = document.getElementById('photo-img');
+  const footer = document.getElementById('darkroom-footer');
+  const copyBtn = document.getElementById('darkroom-copy-btn');
+  const emulsion = document.getElementById('photo-emulsion');
+  
+  if (!tray || !img) return;
+  
+  let AudioContext = window.AudioContext || window.webkitAudioContext;
+  let audioCtx;
+  
+  const modalInner = document.querySelector('.reward-modal .modal-inner');
+  if (modalInner) {
+    modalInner.style.background = 'radial-gradient(circle at 50% 30%, #300609 0%, #0d0102 100%)';
+    modalInner.style.border = '1px solid #ff4d4d';
+  }
+  
+  let progress = 0;
+  let isDeveloping = false;
+  let lastTouchTime = 0;
+  
+  function playSplash(freq) {
+    if (!AudioContext) return;
+    if (!audioCtx) audioCtx = new AudioContext();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq || (800 - Math.random()*200), audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.15);
+    
+    gain.gain.setValueAtTime(0, audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+    
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.2);
+  }
+  
+  function createRipple(x, y) {
+    const ripple = document.createElement('div');
+    ripple.className = 'water-ripple';
+    ripple.style.left = x + 'px';
+    ripple.style.top = y + 'px';
+    tray.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 800);
+  }
+  
+  function updateDevelopment() {
+    if (progress > 100) progress = 100;
+    
+    let opacity = 0;
+    let blur = 4;
+    let grayscale = 100;
+    let contrast = 150;
+    let brightness = 70;
+    
+    if (progress < 30) {
+      const p = progress / 30;
+      opacity = p * 0.4;
+      blur = 4 - (p * 1);
+    } else if (progress < 70) {
+      const p = (progress - 30) / 40;
+      opacity = 0.4 + (p * 0.4);
+      blur = 3 - (p * 2);
+      grayscale = 100 - (p * 80);
+      contrast = 150 - (p * 30);
+      brightness = 70 + (p * 20);
+    } else {
+      const p = (progress - 70) / 30;
+      opacity = 0.8 + (p * 0.2);
+      blur = 1 - p;
+      grayscale = 20 - (p * 20);
+      contrast = 120 - (p * 20);
+      brightness = 90 + (p * 10);
+    }
+    
+    img.style.opacity = opacity;
+    img.style.filter = \`grayscale(\${grayscale}%) contrast(\${contrast}%) brightness(\${brightness}%) blur(\${blur}px)\`;
+    emulsion.style.opacity = 1 - (progress / 100);
+    
+    if (progress >= 100 && !isDeveloping) {
+      isDeveloping = true;
+      tray.classList.add('is-finished');
+      setTimeout(() => {
+        footer.classList.remove('is-hidden');
+      }, 1000);
+    }
+  }
+  
+  function handleInteraction(e) {
+    if (progress >= 100) return;
+    
+    const now = Date.now();
+    if (now - lastTouchTime > 100) {
+      playSplash();
+      lastTouchTime = now;
+    }
+    
+    let clientX, clientY;
+    if (e.touches && e.touches.length > 0) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+    
+    const rect = tray.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    
+    createRipple(x, y);
+    
+    progress += 2.5; 
+    updateDevelopment();
+  }
+  
+  let isDragging = false;
+  tray.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    handleInteraction(e);
+  });
+  tray.addEventListener('mousemove', (e) => {
+    if (isDragging) handleInteraction(e);
+  });
+  window.addEventListener('mouseup', () => isDragging = false);
+  
+  tray.addEventListener('touchstart', (e) => {
+    e.preventDefault(); 
+    isDragging = true;
+    handleInteraction(e);
+  }, { passive: false });
+  tray.addEventListener('touchmove', (e) => {
+    if (isDragging) {
+      e.preventDefault();
+      handleInteraction(e);
+    }
+  }, { passive: false });
+  window.addEventListener('touchend', () => isDragging = false);
+  
+  copyBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(quoteText).then(() => {
+      copyBtn.textContent = 'Kopyalandı! ❤️';
+      setTimeout(() => {
+        copyBtn.textContent = 'Mesajı Kopyala 📋';
+      }, 2000);
+    });
+  });
 }
