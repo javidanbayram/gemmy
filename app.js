@@ -112,6 +112,14 @@ const CONFIG = {
   PARTICLE_COUNT: 90,                    // confetti particle count
 };
 
+/**
+ * TEST MODE — open the page with ?test=true to unlock all boxes at once.
+ * e.g. file:///Users/user/gemmy/index.html?test=true
+ * This flag is ONLY active when the URL contains ?test=true.
+ * Normal users see zero difference.
+ */
+const TEST_MODE = new URLSearchParams(window.location.search).get('test') === 'true';
+
 /* Default state (used on first launch or after reset) */
 const STATE_DEFAULTS = {
   currentDay:     0,         // index of highest unlocked day (0 = none yet)
@@ -201,6 +209,13 @@ function getFriendlyDate() {
  *   - If today === lastOpenedDate, all remaining locked boxes stay locked.
  */
 function applyTimeLockLogic(state) {
+  // ── TEST MODE: unlock every box immediately ──────────────────────
+  if (TEST_MODE) {
+    state.boxStates = state.boxStates.map(s => s === 'locked' ? 'ready' : s);
+    return state;
+  }
+
+  // ── Normal time-lock logic ───────────────────────────────────────
   const today = getTodayString();
 
   // Find the first 'ready' box index (if any)
@@ -210,19 +225,12 @@ function applyTimeLockLogic(state) {
   const nextLockedIdx = state.boxStates.indexOf('locked');
 
   if (today !== state.lastOpenedDate) {
-    // New day! Advance the next locked box to ready (if one exists).
     if (nextLockedIdx !== -1) {
-      // If there was already a 'ready' box that wasn't opened (app closed
-      // before she tapped), keep it ready — don't skip ahead.
       if (readyIdx === -1) {
         state.boxStates[nextLockedIdx] = 'ready';
       }
-      // If there IS an existing ready box, leave it as-is (don't double-advance).
     }
-    // Note: we do NOT update lastOpenedDate here — that only updates when
-    // a box is actually opened.
   }
-  // If today === lastOpenedDate → she already opened today's box. No change.
 
   return state;
 }
@@ -738,6 +746,12 @@ function closeModal(state) {
   DOM.overlay.classList.remove('is-visible');
 
   setTimeout(() => {
+    // In TEST_MODE: immediately make the next locked box ready
+    if (TEST_MODE) {
+      const nextLocked = state.boxStates.indexOf('locked');
+      if (nextLocked !== -1) state.boxStates[nextLocked] = 'ready';
+    }
+
     // Re-render the road with updated state (opened box now shows checkmark)
     renderTrophyRoad(state);
 
@@ -747,7 +761,12 @@ function closeModal(state) {
     void companion.offsetWidth; // reflow
     companion.classList.add('anim-idle');
 
-    setStatusText('✨ Come back tomorrow for more!');
+    const nextReady = state.boxStates.indexOf('ready');
+    if (TEST_MODE && nextReady !== -1) {
+      setStatusText(`🧪 Test mode — click Day ${nextReady + 1} next!`);
+    } else {
+      setStatusText('✨ Come back tomorrow for more!');
+    }
     isAnimating = false;
 
     // Stop particles
