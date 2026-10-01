@@ -1622,3 +1622,183 @@ button:focus-visible {
   0%, 100% { transform: scale(1); box-shadow: 0 6px 24px rgba(123, 63, 228, 0.55); }
   50%       { transform: scale(1.05); box-shadow: 0 10px 36px rgba(123, 63, 228, 0.8); }
 }
+
+/* ─────────────────────────────────────────────────────────────────
+   15. STARR DROP & HEARTBEAT
+   ───────────────────────────────────────────────────────────────── */
+.starr-drop-wrapper {
+  position: relative;
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.starr-drop-phase1, .starr-drop-phase2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  transition: opacity 0.5s ease;
+}
+
+.is-hidden {
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.starr-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin-bottom: 20px;
+}
+
+.starr-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 8px solid transparent;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.starr-icon {
+  font-size: 4rem;
+  z-index: 2;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  transition: transform 0.3s ease;
+}
+
+.starr-label {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  transition: color 0.3s ease;
+}
+
+.starr-hint {
+  font-size: 0.9rem;
+  color: var(--clr-lavender);
+  opacity: 0.8;
+  animation: pulseOpacity 1.5s infinite;
+}
+
+.starr-container.is-legendary .starr-icon {
+  animation: spinStar 0.5s linear infinite;
+}
+
+.starr-container.is-exploding {
+  transform: scale(2) !important;
+  opacity: 0;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+@keyframes spinStar {
+  100% { transform: rotate(360deg); }
+}
+@keyframes pulseOpacity {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.heartbeat-container {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin: 30px 0;
+  user-select: none;
+}
+
+.heart-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 42, 109, 0.4) 0%, transparent 70%);
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.heart-icon {
+  font-size: 5rem;
+  z-index: 2;
+  transition: transform 0.1s ease;
+  filter: drop-shadow(0 0 20px #ff2a6d);
+}
+
+.ekg-line {
+  position: absolute;
+  bottom: 10px;
+  width: 120px;
+  height: 30px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 3;
+}
+
+.heartbeat-container.is-beating .heart-glow {
+  opacity: 1;
+  animation: glowPulse 1s infinite;
+}
+
+.heartbeat-container.is-beating .heart-icon {
+  animation: heartThump 1s infinite;
+}
+
+.heartbeat-container.is-beating .ekg-line {
+  opacity: 1;
+  animation: scrollEKG 2s linear infinite;
+}
+
+.heartbeat-hint {
+  font-size: 1rem;
+  color: #ffb3c6;
+  text-align: center;
+  transition: opacity 0.3s ease;
+  min-height: 40px;
+  margin-bottom: 10px;
+}
+
+.heartbeat-final {
+  font-size: 1.1rem;
+  color: #ff2a6d;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 20px;
+  animation: fadeIn 1s ease forwards;
+}
+
+@keyframes glowPulse {
+  0%, 100% { transform: scale(1); }
+  20% { transform: scale(1.3); }
+  40% { transform: scale(1.1); }
+}
+
+@keyframes heartThump {
+  0%, 100% { transform: scale(1); }
+  20% { transform: scale(1.2); }
+  40% { transform: scale(1.05); }
+}
+
+@keyframes scrollEKG {
+  from { stroke-dashoffset: 100; stroke-dasharray: 100; }
+  to { stroke-dashoffset: 0; stroke-dasharray: 100; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -61,13 +61,13 @@ const rewardsData = [
               <p><a href="https://puzzlesnap.com/share/294e59bfb017458" target="_blank" rel="noopener noreferrer" style="color: #c084fc; text-decoration: underline; font-weight: bold;">Pazlı oynamaq üçün bura toxun!</a></p>`
   },
   {
-    // ── Day 4 ── text message ───────────────────────────────────────
+    // ── Day 4 ── Starr Drop Interactive Game ─────────────────────────
     day: 4,
-    type: 'text',
-    emoji: '💎',
-    title: '4-cü Gün: Əla gedirsən! 💎',
-    content: `<p>Günün necə keçir keçsin, bil ki, səninlə fəxr edirəm.</p>
-              <p>4-cü günü uğurla bitirdin, indi bütün yorğunluğu kənara qoy, biraz dincəl və mənə yaz. 💜</p>`
+    type: 'starr-drop',
+    emoji: '⭐',
+    title: '4-cü Gün: Starr Drop! ⭐',
+    subtitle: 'Nə qədər şanslısan? Yoxlayaq!',
+    content: ''
   },
   {
     // ── Day 5 ── scratch-off reveal ─────────────────────────────────
@@ -471,6 +471,34 @@ function populateModal(idx) {
           ></iframe>
         </div>
       `;
+      break;
+
+    // ── Starr Drop Interactive Flow ────────────────────────────────
+    case 'starr-drop':
+      contentHTML = subtitleHTML + `
+        <div class="starr-drop-wrapper" id="starr-drop-wrapper">
+          <div class="starr-drop-phase1" id="starr-drop-phase1">
+            <div class="starr-container" id="starr-container">
+              <div class="starr-ring" id="starr-ring"></div>
+              <div class="starr-icon" id="starr-icon">⭐</div>
+            </div>
+            <div class="starr-label" id="starr-label">RARE</div>
+            <p class="starr-hint">TOXUN VE YUKSELT! (TAP TO UPGRADE)</p>
+          </div>
+          <div class="starr-drop-phase2 is-hidden" id="starr-drop-phase2">
+            <div class="heartbeat-container" id="heartbeat-container">
+              <div class="heart-glow" id="heart-glow"></div>
+              <div class="heart-icon" id="heart-icon">❤️</div>
+              <svg class="ekg-line" viewBox="0 0 100 20" preserveAspectRatio="none">
+                <path d="M0,10 L30,10 L40,0 L50,20 L60,10 L100,10" fill="none" stroke="#ff2a6d" stroke-width="2" stroke-linejoin="round"></path>
+              </svg>
+            </div>
+            <p class="heartbeat-hint" id="heartbeat-hint">Barmağını ekranda saxla... Sənə hər baxdığımda ürəyimin necə döyündüyünü hiss et.</p>
+            <p class="heartbeat-final is-hidden" id="heartbeat-final">Sema, bütün yorğunluğunu kənara qoy. Bu ritm hər zaman səninlədir ❤️</p>
+          </div>
+        </div>
+      `;
+      requestAnimationFrame(() => initStarrDrop());
       break;
 
     // ── YouTube embed ──────────────────────────────────────────────
@@ -1080,6 +1108,165 @@ function init() {
       });
     });
   });
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   STARR DROP — Interactive Upgrade & Heartbeat Flow
+   ─────────────────────────────────────────────────────────────── */
+function initStarrDrop() {
+  const phase1 = document.getElementById('starr-drop-phase1');
+  const phase2 = document.getElementById('starr-drop-phase2');
+  const starrContainer = document.getElementById('starr-container');
+  const starrLabel = document.getElementById('starr-label');
+  const starrRing = document.getElementById('starr-ring');
+  
+  if (!phase1 || !phase2 || !starrContainer) return;
+  
+  let AudioContext = window.AudioContext || window.webkitAudioContext;
+  let audioCtx;
+  
+  const STAGES = [
+    { label: 'RARE', color: '#4CD964' },
+    { label: 'SUPER RARE', color: '#007AFF' },
+    { label: 'EPIC', color: '#AF52DE' },
+    { label: 'MYTHIC', color: '#FF2D55' },
+    { label: 'LEGENDARY', color: '#FFCC00' }
+  ];
+  
+  let currentStage = 0;
+  
+  starrRing.style.borderColor = STAGES[0].color;
+  starrRing.style.boxShadow = `0 0 20px ${STAGES[0].color}`;
+  starrLabel.style.color = STAGES[0].color;
+  starrLabel.textContent = STAGES[0].label;
+  
+  function playBeep(freq, type, duration) {
+    if (!AudioContext) return;
+    if (!audioCtx) audioCtx = new AudioContext();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+    osc.stop(audioCtx.currentTime + duration);
+  }
+  
+  function playFanfare() {
+    if (!AudioContext) return;
+    if (!audioCtx) audioCtx = new AudioContext();
+    [440, 554, 659, 880].forEach((f, i) => {
+      setTimeout(() => playBeep(f, 'square', 0.5), i * 150);
+    });
+  }
+  
+  starrContainer.addEventListener('click', () => {
+    if (currentStage >= STAGES.length) return;
+    
+    currentStage++;
+    
+    if (currentStage < STAGES.length) {
+      playBeep(200 + (currentStage * 100), 'sine', 0.3);
+      starrContainer.style.transform = 'scale(1.25)';
+      setTimeout(() => starrContainer.style.transform = 'scale(1)', 150);
+      
+      const stage = STAGES[currentStage];
+      starrRing.style.borderColor = stage.color;
+      starrRing.style.boxShadow = `0 0 20px ${stage.color}`;
+      starrLabel.style.color = stage.color;
+      starrLabel.textContent = stage.label;
+      
+      if (currentStage === STAGES.length - 1) {
+        starrContainer.classList.add('is-legendary');
+      }
+    } else {
+      playFanfare();
+      starrContainer.classList.add('is-exploding');
+      setTimeout(() => {
+        phase1.classList.add('is-hidden');
+        phase2.classList.remove('is-hidden');
+        document.querySelector('.reward-modal .modal-inner').style.background = 'radial-gradient(circle, #1a0826 0%, #08030d 100%)';
+        initHeartbeat();
+      }, 600);
+      spawnParticles();
+    }
+  });
+  
+  function initHeartbeat() {
+    const hbContainer = document.getElementById('heartbeat-container');
+    const finalMsg = document.getElementById('heartbeat-final');
+    const hint = document.getElementById('heartbeat-hint');
+    
+    let isHolding = false;
+    let holdTimer;
+    let pulseInterval;
+    
+    function playThump() {
+      if (!AudioContext) return;
+      if (!audioCtx) audioCtx = new AudioContext();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      const filter = audioCtx.createBiquadFilter();
+      
+      osc.type = 'sine';
+      filter.type = 'lowpass';
+      filter.frequency.value = 80;
+      
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.frequency.setValueAtTime(60, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.1);
+      
+      gain.gain.setValueAtTime(0, audioCtx.currentTime);
+      gain.gain.linearRampToValueAtTime(1, audioCtx.currentTime + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+      
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.4);
+      
+      if (navigator.vibrate) {
+        navigator.vibrate([60, 120, 60]);
+      }
+    }
+    
+    function startPulse() {
+      if (isHolding) return;
+      isHolding = true;
+      hint.style.opacity = 0;
+      hbContainer.classList.add('is-beating');
+      
+      const beat = () => {
+        if (!isHolding) return;
+        playThump();
+        setTimeout(() => { if (isHolding) playThump(); }, 200);
+      };
+      
+      beat();
+      pulseInterval = setInterval(beat, 1000);
+      
+      holdTimer = setTimeout(() => {
+        finalMsg.classList.remove('is-hidden');
+      }, 3000);
+    }
+    
+    function stopPulse() {
+      isHolding = false;
+      hint.style.opacity = 1;
+      hbContainer.classList.remove('is-beating');
+      clearInterval(pulseInterval);
+      clearTimeout(holdTimer);
+    }
+    
+    hbContainer.addEventListener('mousedown', startPulse);
+    hbContainer.addEventListener('touchstart', (e) => { e.preventDefault(); startPulse(); }, {passive: false});
+    
+    window.addEventListener('mouseup', stopPulse);
+    window.addEventListener('touchend', stopPulse);
+  }
 }
 
 // Kick it all off when DOM is ready
