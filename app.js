@@ -1385,7 +1385,7 @@ function initDarkroom(quoteText) {
     }
     
     img.style.opacity = opacity;
-    img.style.filter = \`grayscale(\${grayscale}%) contrast(\${contrast}%) brightness(\${brightness}%) blur(\${blur}px)\`;
+    img.style.filter = `grayscale(${grayscale}%) contrast(${contrast}%) brightness(${brightness}%) blur(${blur}px)`;
     emulsion.style.opacity = 1 - (progress / 100);
     
     if (progress >= 100 && !isDeveloping) {
