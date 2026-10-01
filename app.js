@@ -76,7 +76,7 @@ const rewardsData = [
     emoji: "🎞️",
     title: "5-ci Gün: Qaranlıq Otaqda Bir Möcüzə 🎞️", 
     subtitle: "Şəkli üzə çıxarmaq üçün məhlulu damlat...", 
-    content: "SEMANIN_SEKLI_BURA_GELECEK.jpg", 
+    content: "semasi.jpeg", 
     quote: "Bəzi gözəl şeylərin tam üzə çıxması üçün zaman və səbr lazımdır, eynilə səninlə tanışlığımız kimi"
   },
   {
@@ -1421,7 +1421,7 @@ function initDarkroom(quoteText) {
     
     createRipple(x, y);
     
-    progress += 2.5; 
+    progress += 0.8; // Lowered from 2.5 to make it take much longer
     updateDevelopment();
   }
   
