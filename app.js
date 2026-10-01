@@ -52,13 +52,13 @@ const rewardsData = [
     content: 'https://www.youtube.com/embed/qmTRlJeYhG0'
   },
   {
-    // ── Day 3 ── puzzle game ───────────────────────────────────────
+    // ── Day 3 ── puzzle game link ──────────────────────────────────
     day: 3,
-    type: 'iframe',
+    type: 'text',
     emoji: '🧩',
     title: '3-cü Gün: Birlikdə tamamlayaq! 🧩',
-    subtitle: 'Bu pazlı həll et!',
-    content: 'https://puzzlesnap.com/share/294e59bfb017458'
+    content: `<p>Bu gün üçün sənə kiçik bir pazl hazırlamışam!</p>
+              <p><a href="https://puzzlesnap.com/share/294e59bfb017458" target="_blank" rel="noopener noreferrer" style="color: #c084fc; text-decoration: underline; font-weight: bold;">Pazlı oynamaq üçün bura toxun!</a></p>`
   },
   {
     // ── Day 4 ── text message ───────────────────────────────────────
