@@ -19,7 +19,7 @@
    ═══════════════════════════════════════════════════════════════════
    Each entry = one day's reward box.
    Fields:
-     type     → 'text' | 'image' | 'youtube' | 'audio' | 'scratch-off' | 'image-reveal'
+     type     → 'text' | 'image' | 'youtube' | 'audio' | 'scratch-off' | 'image-reveal' | 'iframe'
      emoji    → Emoji shown on the box card when ready/opened
      title    → Headline shown in the reward modal
      subtitle → (optional) Small subheading beneath the title (used by audio, image-reveal)
@@ -52,14 +52,13 @@ const rewardsData = [
     content: 'https://www.youtube.com/embed/qmTRlJeYhG0'
   },
   {
-    // ── Day 3 ── text message ───────────────────────────────────────
+    // ── Day 3 ── puzzle game ───────────────────────────────────────
     day: 3,
-    type: 'text',
-    emoji: '🚀',
-    title: '3-cü Gün: Yarıya çatdıq! 🚀',
-    content: `<p>Artıq həftənin ortasındayıq.</p>
-              <p>Bilirem ki, bəzən çox yorulursan, amma sənin necə güclü və əzmli olduğunu mən çox yaxşı bilirəm.</p>
-              <p>Sadəcə gülümsə və davam et! 💪✨</p>`
+    type: 'iframe',
+    emoji: '🧩',
+    title: '3-cü Gün: Birlikdə tamamlayaq! 🧩',
+    subtitle: 'Bu pazlı həll et!',
+    content: 'https://puzzlesnap.com/share/294e59bfb017458'
   },
   {
     // ── Day 4 ── text message ───────────────────────────────────────
@@ -458,6 +457,20 @@ function populateModal(idx) {
     case 'image':
       contentHTML = subtitleHTML +
         `<img src="${reward.content}" alt="Gün ${idx + 1} mükafat şəkli" loading="lazy" />`;
+      break;
+
+    // ── Iframe ─────────────────────────────────────────────────────
+    case 'iframe':
+      contentHTML = subtitleHTML + `
+        <div class="iframe-wrapper" style="width: 100%; height: 400px; border-radius: 12px; overflow: hidden; margin-top: 10px;">
+          <iframe
+            src="${reward.content}"
+            title="Gün ${idx + 1} məzmunu"
+            style="width: 100%; height: 100%; border: none;"
+            allowfullscreen
+          ></iframe>
+        </div>
+      `;
       break;
 
     // ── YouTube embed ──────────────────────────────────────────────
