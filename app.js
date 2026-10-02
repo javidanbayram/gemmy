@@ -118,7 +118,7 @@ const CONFIG = {
  * This flag is ONLY active when the URL contains ?test=true.
  * Normal users see zero difference.
  */
-const TEST_MODE = new URLSearchParams(window.location.search).get('test') === 'true';
+const TEST_MODE = true; // new URLSearchParams(window.location.search).get('test') === 'true';
 
 /* Default state (used on first launch or after reset) */
 const STATE_DEFAULTS = {

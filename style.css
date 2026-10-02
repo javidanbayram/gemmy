@@ -1921,3 +1921,27 @@ button:focus-visible {
   line-height: 1.5;
   text-shadow: 0 0 8px rgba(255, 100, 100, 0.4);
 }
+
+/* ─────────────────────────────────────────────────────────────────
+   19. MOBILE RESPONSIVENESS
+   ───────────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .app-wrapper {
+    padding: 10px;
+  }
+  .trophy-road-section {
+    padding: 20px 10px;
+  }
+  .modal-inner {
+    padding: 30px 20px 20px;
+  }
+  .modal-title {
+    font-size: 1.3rem;
+  }
+  .trophy-road-title {
+    font-size: 1.6rem;
+  }
+  .companion-container {
+    transform: scale(0.8);
+  }
+}
